@@ -10,4 +10,4 @@ router.get('^/$|/index(.html)?', (req, res) => {
     res.sendFile(path.join(VIEWS_DIR, 'index.html'))
 })
 
-export { router }
+export { router as rootRouter }
