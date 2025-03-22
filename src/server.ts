@@ -8,6 +8,7 @@ import express from 'express'
 import path from 'path'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
+import mysql from 'mysql2/promise'
 
 // Internal imports
 import { router as rootRouter } from './routes/root.route.js'
@@ -17,7 +18,14 @@ import { PORT, HOST, PROTOCOL } from './constants.js'
 import errorHandler from './middleware/errorHandler.js'
 import corsOptions from './config/corsOptions.ts'
 
-// * App setup * //
+// * Database setup * //
+export const connection = mysql
+    .createConnection(process.env.DATABASE_URL!)
+    .then(() => {
+        console.log('Connected to database')
+    })
+
+// * Express App setup * //
 const app = express()
 
 // * Middleware * //
