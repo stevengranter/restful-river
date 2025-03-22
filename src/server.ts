@@ -6,6 +6,7 @@
 import 'dotenv/config'
 import express from 'express'
 import path from 'path'
+import cookieParser from 'cookie-parser'
 
 // Internal imports
 import { router as rootRouter } from './routes/root.route.js'
@@ -21,6 +22,12 @@ const app = express()
 
 // Logger
 app.use(logger)
+
+// JSON
+app.use(express.json())
+
+// Cookie Parser
+app.use(cookieParser())
 
 // Public static files
 app.use('/', express.static(path.join(SCRIPT_DIR, '../public')))
