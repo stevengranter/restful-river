@@ -9,6 +9,7 @@ import path from 'path'
 
 // Internal imports
 import { router as rootRouter } from './routes/root.route.js'
+import logger from './middleware/logger.js'
 import { SCRIPT_DIR, VIEWS_DIR } from './constants.js'
 import { PORT, HOST, PROTOCOL } from './constants.js'
 
@@ -16,6 +17,9 @@ import { PORT, HOST, PROTOCOL } from './constants.js'
 const app = express()
 
 // * Middleware * //
+
+// Logger
+app.use(logger)
 
 // Public static files
 app.use('/', express.static(path.join(SCRIPT_DIR, '../public')))
