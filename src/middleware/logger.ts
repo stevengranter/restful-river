@@ -6,7 +6,7 @@ import path from 'path'
 import { SCRIPT_DIR } from '../constants.js'
 import { type Request, type Response, type NextFunction } from 'express'
 
-const logEvents = async (message: string, logFileName: string) => {
+export const logEvents = async (message: string, logFileName: string) => {
     const dateTime = format(new Date(), 'yyyyMMdd\tHH:mm:ss')
     const logItem = `${dateTime}\t${uuid()}\t${message}`
 
@@ -26,8 +26,8 @@ const logEvents = async (message: string, logFileName: string) => {
 
 const logger = (req: Request, res: Response, next: NextFunction) => {
     logEvents(
-        `${req.method}\t${req.url}\t${req.headers.origin}`,
-        'reqLog.log'
+        `${req.method}\t${req.url}\t${req.headers.origin}\t`,
+        'access.log'
     ).then(() => {
         console.log(`${req.method} ${req.path}`)
     })
