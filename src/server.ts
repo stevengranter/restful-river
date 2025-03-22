@@ -7,6 +7,7 @@ import 'dotenv/config'
 import express from 'express'
 import path from 'path'
 import cookieParser from 'cookie-parser'
+import cors from 'cors'
 
 // Internal imports
 import { router as rootRouter } from './routes/root.route.js'
@@ -14,6 +15,7 @@ import logger from './middleware/logger.js'
 import { SCRIPT_DIR, VIEWS_DIR } from './constants.js'
 import { PORT, HOST, PROTOCOL } from './constants.js'
 import errorHandler from './middleware/errorHandler.js'
+import corsOptions from './config/corsOptions.ts'
 
 // * App setup * //
 const app = express()
@@ -22,6 +24,9 @@ const app = express()
 
 // Logger
 app.use(logger)
+
+// CORS
+app.use(cors(corsOptions))
 
 // JSON
 app.use(express.json())
