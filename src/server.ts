@@ -17,6 +17,7 @@ import { PORT, HOST, PROTOCOL } from "./constants.js"
 import errorHandler from "./middleware/errorHandler.js"
 import corsOptions from "./config/corsOptions.ts"
 import { dbService } from "./services/mysql.service.js"
+import { authRouter } from "./routes/auth.route.js"
 
 // * Express App setup * //
 const app = express()
@@ -41,6 +42,7 @@ app.use("/", express.static(path.join(SCRIPT_DIR, "../public")))
 const routes = [
     { url: "/", router: rootRouter },
     { url: "/users", router: usersRouter },
+    { url: "/auth", router: authRouter },
 ]
 
 routes.forEach((route) => {

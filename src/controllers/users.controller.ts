@@ -2,7 +2,7 @@
 import { Request, Response } from "express"
 import bcrypt from "bcrypt"
 import { db } from "../server.js"
-import { userSchema } from "../schemas/user.schema.js"
+import { userSchema, userRegistrationSchema } from "../schemas/user.schema.js"
 
 const getAllUsers = async (req: Request, res: Response) => {
     const rows = await db.query("SELECT email,username FROM user_data")
@@ -14,7 +14,7 @@ const getAllUsers = async (req: Request, res: Response) => {
 }
 
 const createNewUser = async (req: Request, res: Response) => {
-    const parsedBody = userSchema.safeParse(req.body)
+    const parsedBody = userRegistrationSchema.safeParse(req.body)
 
     if (parsedBody.error) {
         return res.status(400).send(parsedBody.error.message)
