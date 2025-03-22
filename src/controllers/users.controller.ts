@@ -2,24 +2,25 @@
 import { Request, Response } from "express"
 import bcrypt from "bcrypt"
 import { db } from "../server.js"
-
-interface UserRequestBody {
-    username: string
-    password: string
-    email: string
-}
+import { userSchema } from "../schemas/user.schema.js"
 
 const getAllUsers = async (req: Request, res: Response) => {
     const rows = await db.query("SELECT email,username FROM user_data")
     if (!rows || (Array.isArray(rows) && rows.length < 1)) {
         return res.status(400).json({ message: "No users found" })
     }
-    console.log(rows)
+
     res.status(200).json(rows)
 }
 
 const createNewUser = async (req: Request, res: Response) => {
-    const { email, password: UNSAFEPassword } = req.body
+    const parsedBody = userSchema.safeParse(req.body)
+
+    if (parsedBody.error) {
+        return res.status(400).send(parsedBody.error.message)
+    }
+
+    const { email, password: UNSAFEPassword } = parsedBody.data
 
     const rows = await db.query("SELECT email FROM user_data WHERE email = ?", [
         email.toLowerCase(),
@@ -49,7 +50,13 @@ const createNewUser = async (req: Request, res: Response) => {
 }
 
 const updateUser = async (req: Request, res: Response) => {
-    const { email, username, password: UNSAFEPassword } = req.body
+    const parsedBody = userSchema.safeParse(req.body)
+
+    if (parsedBody.error) {
+        return res.status(400).send(parsedBody.error.message)
+    }
+
+    const { email, password: UNSAFEPassword, username } = parsedBody.data
     const rows = await db.query("SELECT email FROM user_data WHERE email = ?", [
         email.toLowerCase(),
     ])
