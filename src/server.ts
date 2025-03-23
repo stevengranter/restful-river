@@ -18,6 +18,8 @@ import errorHandler from "./middleware/errorHandler.js"
 import corsOptions from "./config/corsOptions.ts"
 import { dbService } from "./services/mysql.service.js"
 import { authRouter } from "./routes/auth.route.js"
+import { refreshTokenRouter } from "./routes/refresh.route.js"
+import { logoutRouter } from "./routes/logout.route.js"
 
 // * Express App setup * //
 const app = express()
@@ -43,6 +45,8 @@ const routes = [
     { url: "/", router: rootRouter },
     { url: "/users", router: usersRouter },
     { url: "/auth", router: authRouter },
+    { url: "/refresh", router: refreshTokenRouter },
+    { url: "/logout", router: logoutRouter },
 ]
 
 routes.forEach((route) => {
