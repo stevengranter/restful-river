@@ -4,10 +4,11 @@ import { Request, Response, NextFunction } from "express"
 
 const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers["authorization"]
-    console.log("Headers:")
-    console.log(req.headers)
-    if (!authHeader) return res.sendStatus(401)
-    // console.log(authHeader)
+    if (!authHeader) {
+        res.sendStatus(401)
+        return
+    }
+    
     const token = authHeader && authHeader.split(" ")[1]
     jwt.verify(
         token,

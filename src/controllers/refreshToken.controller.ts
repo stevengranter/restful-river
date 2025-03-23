@@ -5,7 +5,10 @@ import { Request, Response } from "express"
 
 const handleRefreshToken = async (req: Request, res: Response) => {
     const cookies = req.cookies
-    if (!cookies?.jwt) return res.status(401)
+    if (!cookies?.jwt) {
+        res.status(401)
+        return
+    }
 
     const refreshToken = cookies.jwt
 
@@ -16,7 +19,8 @@ const handleRefreshToken = async (req: Request, res: Response) => {
     )
     console.log(foundUser)
     if (!foundUser || foundUser.length < 1) {
-        return res.status(403)
+        res.status(403)
+        return
     }
 
     //evaluate JWT
@@ -24,7 +28,10 @@ const handleRefreshToken = async (req: Request, res: Response) => {
         refreshToken,
         process.env.REFRESH_TOKEN_SECRET!,
         (err: any, decoded: any) => {
-            if (err || foundUser.email !== decoded.email) return res.status(403)
+            if (err || foundUser.email !== decoded.email) {
+                res.status(403)
+                return
+            }
             const accessToken = jwt.sign(
                 { email: decoded.email },
                 process.env.ACCESS_TOKEN_SECRET!,
@@ -35,7 +42,7 @@ const handleRefreshToken = async (req: Request, res: Response) => {
         }
     )
 }
-
+ 
 const refreshTokenController = { handleRefreshToken }
 
 export default refreshTokenController

@@ -5,7 +5,10 @@ import { Request, Response } from "express"
 const handleLogout = async (req: Request, res: Response) => {
     // On client, also delete access token
     const cookies = req.cookies
-    if (!cookies?.jwt) return res.sendStatus(204)
+    if (!cookies?.jwt) {
+        res.sendStatus(204)
+        return
+    }
 
     const refreshToken = cookies.jwt
 
@@ -16,7 +19,8 @@ const handleLogout = async (req: Request, res: Response) => {
     )
     if (!foundUser || foundUser.length < 1) {
         res.clearCookie("jwt", { httpOnly: true })
-        return res.sendStatus(204)
+        res.sendStatus(204)
+        return
     }
 
     // Delete refresh token in db
@@ -26,7 +30,8 @@ const handleLogout = async (req: Request, res: Response) => {
     )
 
     res.clearCookie("jwt", { httpOnly: true })
-    return res.sendStatus(200).json({ message: "Logout successful" })
+    res.status(200).json({ message: "Logout successful" })
+    return
 }
 
 const logoutController = { handleLogout }

@@ -7,7 +7,8 @@ import { userSchema, userRegistrationSchema } from "../schemas/user.schema.js"
 const getAllUsers = async (req: Request, res: Response) => {
     const rows = await db.query("SELECT email,username FROM user_data")
     if (!rows || (Array.isArray(rows) && rows.length < 1)) {
-        return res.status(400).json({ message: "No users found" })
+        res.status(400).json({ message: "No users found" })
+        return
     }
 
     res.status(200).json(rows)
@@ -17,7 +18,8 @@ const createNewUser = async (req: Request, res: Response) => {
     const parsedBody = userRegistrationSchema.safeParse(req.body)
 
     if (parsedBody.error) {
-        return res.status(400).send(parsedBody.error.message)
+        res.status(400).send(parsedBody.error.message)
+        return
     }
 
     const { email, password: UNSAFEPassword } = parsedBody.data
@@ -28,9 +30,10 @@ const createNewUser = async (req: Request, res: Response) => {
     console.log(rows)
     if (rows && rows.length > 0) {
         console.log(rows)
-        return res.status(400).json({
+        res.status(400).json({
             message: `Cannot create user, email ${email} already registered`,
         })
+        return
     }
     const hashedPassword = await bcrypt.hash(UNSAFEPassword, 10)
 
@@ -53,7 +56,8 @@ const updateUser = async (req: Request, res: Response) => {
     const parsedBody = userSchema.safeParse(req.body)
 
     if (parsedBody.error) {
-        return res.status(400).send(parsedBody.error.message)
+        res.status(400).send(parsedBody.error.message)
+        return
     }
 
     const { email, password: UNSAFEPassword, username } = parsedBody.data
@@ -90,7 +94,9 @@ const updateUser = async (req: Request, res: Response) => {
     }
 }
 
-const deleteUser = async (req: Request, res: Response) => {}
+const deleteUser = async (req: Request, res: Response) => {
+    res.status(500).json({ message: "Not implemented" })
+}
 
 const usersController = { getAllUsers, createNewUser, updateUser, deleteUser }
 

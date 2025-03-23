@@ -1,9 +1,6 @@
 import "dotenv/config"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
-import * as fs from "fs"
-import * as fsPromises from "fs/promises"
-import path from "path"
 import { userSchema } from "../schemas/user.schema.js"
 import { db } from "../server.js"
 import { Request, Response } from "express"
@@ -12,7 +9,8 @@ const handleLogin = async (req: Request, res: Response) => {
     // Check req.body to see if matches schema
     const parsedBody = userSchema.safeParse(req.body)
     if (parsedBody.error) {
-        return res.status(400).send(parsedBody.error.message)
+        res.status(400).send(parsedBody.error.message)
+        return
     }
     const { email, password } = parsedBody.data
 
@@ -22,7 +20,8 @@ const handleLogin = async (req: Request, res: Response) => {
         [email.toLowerCase()]
     )
     if (!foundUser || foundUser.length < 1) {
-        return res.status(400).json({ message: "User not found" })
+        res.status(400).json({ message: "User not found" })
+        return
     }
 
     // Check if password matches
@@ -31,17 +30,20 @@ const handleLogin = async (req: Request, res: Response) => {
         const accessToken = jwt.sign(
             { email: foundUser.email },
             process.env.ACCESS_TOKEN_SECRET!,
-            { expiresIn: "15s" }
+            { expiresIn: "120s" }
         )
         const refreshToken = jwt.sign(
             { email: foundUser.email },
             process.env.REFRESH_TOKEN_SECRET!,
             { expiresIn: "1d" }
         )
-        const result = await db.mutate(
-            "UPDATE user_data SET refresh_token = ? WHERE email = ?",
-            [refreshToken, foundUser.email]
-        )
+        const result = await db
+            .mutate("UPDATE user_data SET refresh_token = ? WHERE email = ?", [
+                refreshToken,
+                foundUser.email,
+            ])
+            .then(() => console.log("Refresh token saved to database"))
+
         res.cookie("jwt", refreshToken, {
             httpOnly: true,
             maxAge: 24 * 60 * 60 * 1000,
